@@ -38,5 +38,3 @@ let createNativeElement =
 let view = createNativeElement(View);
 
 let text = createNativeElement(Text);
-
-let button = createNativeElement(Button);

@@ -1,0 +1,1 @@
+PureNative.render(<Sample.ReducerComponent />, "App");

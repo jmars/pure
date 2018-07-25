@@ -7,13 +7,10 @@ module Host: ReconcilerSpec.HostConfig = {
       switch (primitive) {
       | View => "div"
       | Text => "span"
-      | Button => "button"
       };
     let node = Webapi.Dom.Document.createElement(name, Webapi.Dom.document);
     PureDomProps.reconcile(node, None, props);
     switch (primitive, props.title) {
-    | (Button, Some(value)) =>
-      Webapi.Dom.Document.setTextContent(Obj.magic(node), value)
     | _ => ()
     };
     node;

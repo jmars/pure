@@ -1,6 +1,4 @@
-type color = (float, float, float, float);
-
-type style = {backgroundColor: option(color)};
+type style = {backgroundColor: option(Color.color)};
 
 type props = {
   id: option(string),
@@ -17,8 +15,7 @@ type props = {
 
 type primitive =
   | View
-  | Text
-  | Button;
+  | Text;
 
 type sideEffects = unit => unit;
 
@@ -26,7 +23,7 @@ type stateless = unit;
 
 type actionless = unit;
 
-module Callback = {
+module PureCallback = {
   type t('payload) = 'payload => unit;
   let default = _event => ();
   let chain = (handlerOne, handlerTwo, payload) => {
@@ -36,7 +33,7 @@ module Callback = {
 };
 
 type reduce('payload, 'action) =
-  ('payload => 'action) => Callback.t('payload);
+  ('payload => 'action) => PureCallback.t('payload);
 
 type update('state, 'action) =
   | NoUpdate
@@ -81,9 +78,6 @@ let reducerComponent = debugName => basicComponent(debugName);
 
 let string = value => Flat(String(value));
 
-/* let list = value => Nested("div", defaultProps, value);
-
-   let array = value => Nested("div", defaultProps, Belt.List.fromArray(value)); */
 let null = Flat(Nil);
 
 let nil = Flat(Nil);

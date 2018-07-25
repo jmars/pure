@@ -27,21 +27,18 @@ module ReducerComponent = {
             flex: 1,
             justifyContent: JustifySpaceAround,
           }>
-          <view layout={...defaultLayout, height: 200, flexDirection: Row}>
-            <button layout={...defaultLayout, flex: 1} title="Click me" />
-            <button layout={...defaultLayout, flex: 1} title="Or me" />
-          </view>
+          <view layout={...defaultLayout, height: 200, flexDirection: Row} />
           <view
             layout={...defaultLayout, flex: 1, margin: 16}
-            style={backgroundColor: Some((150., 0., 0., 0.2))}
+            style={backgroundColor: Some(Color.rgba(150, 0, 0, 0.2))}
           />
           <view
             layout={...defaultLayout, flex: 1, margin: 16}
-            style={backgroundColor: Some((0., 0., 0., 0.2))}
+            style={backgroundColor: Some(Color.rgba(0, 0, 0, 0.2))}
           />
           <view
             layout={...defaultLayout, flex: 1, margin: 16}
-            style={backgroundColor: Some((0., 0., 0., 0.2))}
+            style={backgroundColor: Some(Color.rgba(0, 0, 0, 0.2))}
           />
         </view>,
     });

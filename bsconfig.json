@@ -1,24 +1,37 @@
 {
   "name": "pure",
-  "ocamlfind-dependencies": ["lablgtk2"],
-  "bs-dependencies": ["bs-webapi"],
-  "static-libraries": ["pure-macos/cocoa_bindings/lib/cocoa_stubs.o"],
-  "c-linker-flags": ["'-framework Cocoa'"],
+  "ocamlfind-dependencies": [],
+  "bs-dependencies": [
+    "bs-webapi"
+  ],
+  "static-libraries": [
+    "lib/nanovg.o",
+    "lib/nanovg_stubs.o"
+  ],
+  "c-linker-flags": [
+    "-lSDL2",
+    "-lGLEW",
+    "-lGL",
+    "-lm",
+    "-lGLU"
+  ],
+  "build-script": "build_script.re",
   "sources": [
-    { "dir": "pure", "subdirs": true },
+    {
+      "dir": "pure",
+      "subdirs": true
+    },
     {
       "backend": "js",
       "dir": "pure-dom",
       "subdirs": true
     },
     {
-      "backend": ["native", "bytecode"],
-      "dir": "pure-macos",
-      "subdirs": true
-    },
-    {
-      "backend": ["native", "bytecode"],
-      "dir": "pure-gtk",
+      "backend": [
+        "native",
+        "bytecode"
+      ],
+      "dir": "pure-native",
       "subdirs": true
     },
     {
@@ -29,19 +42,11 @@
   "entries": [
     {
       "backend": "bytecode",
-      "main-module": "MainMacOS"
+      "main-module": "MainNative"
     },
     {
       "backend": "native",
-      "main-module": "MainMacOS"
-    },
-    {
-      "backend": "bytecode",
-      "main-module": "MainGTK"
-    },
-    {
-      "backend": "native",
-      "main-module": "MainGTK"
+      "main-module": "MainNative"
     },
     {
       "backend": "js",

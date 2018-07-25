@@ -30,7 +30,6 @@ module Make = (Config: ReconcilerSpec.HostConfig) => {
     | Nested(t, _, _) =>
       switch (t) {
       | View => "View"
-      | Button => "Button"
       | Text => "Text"
       }
     | Flat(t) =>
