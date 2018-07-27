@@ -29,11 +29,41 @@ let createNativeElement =
       ~children: list(pureElement),
       _: unit,
     ) =>
-  Nested(
-    nativeElement,
-    {...defaultProps, id, value, onClick, layout, style, title},
-    children,
-  );
+  switch (nativeElement) {
+  | View =>
+    Nested(
+      nativeElement,
+      {...defaultProps, id, value, onClick, layout, style, title},
+      children,
+    )
+  | Text =>
+    Nested(
+      nativeElement,
+      {
+        ...defaultProps,
+        id,
+        value,
+        onClick,
+        layout: {
+          ...layout,
+          width:
+            if (layout.width < 0) {
+              Nanovg.measureText(
+                switch (value) {
+                | Some(v) => v
+                | None => ""
+                },
+              );
+            } else {
+              layout.width;
+            },
+        },
+        style,
+        title,
+      },
+      children,
+    )
+  };
 
 let view = createNativeElement(View);
 

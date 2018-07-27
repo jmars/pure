@@ -39,7 +39,7 @@ module Make = (Config: ReconcilerSpec.HostConfig) => {
     let style =
       switch (f.fiberType) {
       | Nested(_, props, _) => props.layout
-      | _ => LayoutSupport.defaultStyle
+      | Flat(_) => LayoutSupport.defaultStyle
       };
     LS.createNode(~withChildren=children, ~andStyle=style, fiber);
   }
@@ -71,7 +71,7 @@ module Make = (Config: ReconcilerSpec.HostConfig) => {
         height: float_of_int(node.layout.height),
       };
       Config.applyLayout(stateNode, layout);
-    | _ => ()
+    | None => ()
     };
     Array.iter(applyLayout, node.children);
   };

@@ -27,19 +27,51 @@ module ReducerComponent = {
             flex: 1,
             justifyContent: JustifySpaceAround,
           }>
-          <view layout={...defaultLayout, height: 200, flexDirection: Row} />
           <view
-            layout={...defaultLayout, flex: 1, margin: 16}
-            style={backgroundColor: Some(Color.rgba(150, 0, 0, 0.2))}
-          />
+            layout={
+              ...defaultLayout,
+              height: 200,
+              alignItems: AlignCenter,
+              justifyContent: JustifyCenter,
+            }>
+            <text
+              layout={...defaultLayout, flex: 1, marginTop: 100}
+              value="0"
+            />
+          </view>
           <view
-            layout={...defaultLayout, flex: 1, margin: 16}
-            style={backgroundColor: Some(Color.rgba(0, 0, 0, 0.2))}
-          />
+            layout={
+              ...defaultLayout,
+              flex: 1,
+              margin: 16,
+              justifyContent: JustifyCenter,
+              alignItems: AlignCenter,
+            }
+            style={backgroundColor: Some(Color.rgba(150, 0, 0, 0.2))}>
+            <text layout={...defaultLayout, flex: 1} value="add" />
+          </view>
           <view
-            layout={...defaultLayout, flex: 1, margin: 16}
-            style={backgroundColor: Some(Color.rgba(0, 0, 0, 0.2))}
-          />
+            layout={
+              ...defaultLayout,
+              flex: 1,
+              margin: 16,
+              justifyContent: JustifyCenter,
+              alignItems: AlignCenter,
+            }
+            style={backgroundColor: Some(Color.rgba(0, 0, 0, 0.2))}>
+            <text layout={...defaultLayout, flex: 1} value="reset" />
+          </view>
+          <view
+            layout={
+              ...defaultLayout,
+              flex: 1,
+              margin: 16,
+              justifyContent: JustifyCenter,
+              alignItems: AlignCenter,
+            }
+            style={backgroundColor: Some(Color.rgba(0, 0, 0, 0.2))}>
+            <text layout={...defaultLayout, flex: 1} value="minus" />
+          </view>
         </view>,
     });
 };

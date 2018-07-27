@@ -52,12 +52,12 @@ let some_default = (d, s) =>
   | None => d
   };
 
-let rec draw_of_childNode = (n: node([ | `Text | `View])) =>
+let rec draw_of_childNode = (x, y, n: node([ | `Text | `View])) =>
   switch (n) {
-  | View(v) => draw_of_view(v)
-  | Text(s) => draw_of_text(s)
+  | View(v) => draw_of_view(x, y, v)
+  | Text(s) => draw_of_text(x, y, s)
   }
-and draw_of_view = v => {
+and draw_of_view = (x, y, v) => {
   open Nanovg;
   let bg =
     some_default(
@@ -67,7 +67,12 @@ and draw_of_view = v => {
   let color = Color.toRgb(bg);
   let self = [
     BeginPath,
-    Rect(v.layout.left, v.layout.top, v.layout.width, v.layout.height),
+    Rect(
+      x +. v.layout.left,
+      y +. v.layout.top,
+      v.layout.width,
+      v.layout.height,
+    ),
     FillColor(
       color.red,
       color.green,
@@ -76,11 +81,17 @@ and draw_of_view = v => {
     ),
     Fill,
   ];
-  self @ List.concat(List.map(draw_of_childNode, v.children));
+  self
+  @ List.concat(
+      List.map(
+        draw_of_childNode(x +. v.layout.left, y +. v.layout.top),
+        v.children,
+      ),
+    );
 }
-and draw_of_text = s => {
+and draw_of_text = (x, y, s) => {
   let value = some_default("", s.props.value);
-  [Text(s.layout.left, s.layout.top, value)];
+  [Text(x +. s.layout.left, y +. s.layout.top, value)];
 };
 
 let window = Window(ref(defaultView()));
@@ -127,7 +138,7 @@ module Host: ReconcilerSpec.HostConfig = {
         | View => Node(View({...defaultView(), props}))
         | Text => Node(Text({...defaultText(), props}))
         }
-      | _ => Node(window)
+      | Flat(_) => Node(window)
       };
   let createTextInstance = value =>
     Node(
@@ -142,14 +153,17 @@ module Host: ReconcilerSpec.HostConfig = {
   let commitUpdate = (Node(node), _oldProps, props) =>
     switch (node) {
     | View(v) => v.props = props
-    | _ => ()
+    | Text(t) => t.props = props
+    | Window(_) => ()
     };
   let appendChild = (Node(parent), Node(node)) =>
     switch (parent, node) {
     | (Window(w), View(c)) => w := c
     | (View(p), View(_) as n) => p.children = p.children @ [n]
     | (View(p), Text(_) as t) => p.children = p.children @ [t]
-    | _ => ()
+    | (Window(_), _) => ()
+    | (_, Window(_)) => ()
+    | (Text(_), _) => ()
     };
   let removeChild = (Node(parent), Node(node)) =>
     switch (parent, node) {
@@ -157,12 +171,16 @@ module Host: ReconcilerSpec.HostConfig = {
       p.children = List.filter(c => n == c, p.children)
     | (View(p), Text(_) as t) =>
       p.children = List.filter(c => t == c, p.children)
-    | _ => ()
+    | (Text(_), _) => ()
+    | (Window(_), _) => ()
+    | (_, Window(_)) => ()
     };
   let applyLayout = (Node(node), layout) => {
+    open ReconcilerSpec;
     switch (node) {
     | View(v) => v.layout = layout
-    | _ => ()
+    | Text(t) => t.layout = layout
+    | Window(_) => ()
     };
     ();
   };
@@ -188,7 +206,7 @@ let render = (pureElement: Pure.pureElement, windowName) => {
   let i = ref(0);
   while (i^ < 10) {
     NanoVGReconciler.perfomWork();
-    let draw = draw_of_view(w^);
+    let draw = draw_of_view(0., 0., w^);
     Nanovg.render(draw);
     let event = Nanovg.runEventLoop();
     triggerEvent(event, w^);

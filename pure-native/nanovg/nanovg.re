@@ -39,3 +39,5 @@ external runEventLoop : unit => event = "ovg_run_event_loop";
 external render : draw => unit = "ovg_render";
 
 external cleanup : unit => unit = "ovg_cleanup";
+
+external measureText : string => int = "ovg_measureText";

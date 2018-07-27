@@ -6,6 +6,25 @@ static int quit = 0;
 static int width;
 static int height;
 
+CAMLprim value ovg_measureText(value text) {
+  CAMLparam1(text);
+  CAMLlocal1(tuple);
+
+  static float bounds[4] = { 0, 0, 0, 0 };
+  static char* s;
+  static int w;
+
+  s = String_val(text);
+
+  nvgFontSize(vg, 24.0f);
+  nvgFontFace(vg, "sans");
+  nvgTextBounds(vg, 0, 0, s, NULL, &bounds);
+
+  w = bounds[2] - bounds[0];
+
+  CAMLreturn(Val_int(w));
+};
+
 CAMLprim value ovg_draw(value draw) {
   CAMLparam1(draw);
   CAMLlocal3(next, cmd, c);
@@ -17,15 +36,9 @@ CAMLprim value ovg_draw(value draw) {
 
   cmd = Field(draw, 0);
   next = Field(draw, 1);
-  double x;
-  double y;
-  double w;
-  double h;
-  char *s;
-  int r;
-  int g;
-  int b;
-  int a;
+  static double x, y, w, h;
+  static char *s;
+  static int r, g, b, a;
 
   while (1) {
     /*
@@ -71,13 +84,21 @@ CAMLprim value ovg_draw(value draw) {
         case 4:
           // TextAlign
           break;
+        */
         case 5:
           // Text(float, float, string)
           x = Double_val(Field(cmd, 0));
           y = Double_val(Field(cmd, 1));
-          char *s = String_val(Field(cmd, 2));
+          s = String_val(Field(cmd, 2));
+          nvgBeginPath(vg);
+          nvgTextAlign(vg,NVG_ALIGN_LEFT|NVG_ALIGN_TOP);
+          nvgFontSize(vg, 24.0f);
+          nvgFontFace(vg, "sans");
+          nvgFillColor(vg, nvgRGBA(0, 0, 0, 255));
           nvgText(vg, x, y, s, NULL);
+          nvgFill(vg);
           break;
+        /*
         case 6:
           // StrokeColor
           break;
@@ -122,9 +143,9 @@ CAMLprim value ovg_draw(value draw) {
 };
 
 CAMLprim value ovg_run_event_loop() {
-  SDL_Event e;
-  SDL_MouseButtonEvent *mouse_event = &e;
   CAMLlocal1(event);
+  static SDL_Event e;
+  static SDL_MouseButtonEvent *mouse_event = &e;
 
   SDL_WaitEvent(&e);
   switch( e.type )
@@ -195,6 +216,8 @@ CAMLprim value ovg_create_window(value x, value y, value n) {
     SDL_Quit();
     return 2;
   }
+
+  int font = nvgCreateFont(vg, "sans", "Roboto-Regular.ttf");
 
   return Val_unit;
 }

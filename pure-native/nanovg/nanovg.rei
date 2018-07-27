@@ -39,3 +39,5 @@ let runEventLoop: unit => event;
 let render: draw => unit;
 
 let cleanup: unit => unit;
+
+let measureText: string => int;
