@@ -4,7 +4,9 @@ type event =
   | MouseButtonDown(int, int)
   | MouseButtonUp(int, int)
   | MouseMotion(int, int)
-  | MouseWheel;
+  | MouseWheel
+  | Quit
+  | UnhandledEvent;
 
 type text_align =
   | Left

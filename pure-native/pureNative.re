@@ -96,36 +96,39 @@ and draw_of_text = (x, y, s) => {
 
 let window = Window(ref(defaultView()));
 
-let rec triggerEvent = (e: Nanovg.event, v: view) =>
+let rec triggerEvent = (e: Nanovg.event, xv: int, yv: int, v: view) => {
+  let left = (v.layout.left |> int_of_float) + xv;
+  let top = (v.layout.top |> int_of_float) + yv;
+  let right = (v.layout.left +. v.layout.width |> int_of_float) + xv;
+  let bottom = (v.layout.top +. v.layout.height |> int_of_float) + yv;
   switch (e) {
   | KeyUp => ()
   | KeyDown => ()
-  | MouseButtonDown(_x, _y) => ()
-  | MouseButtonUp(x, y) =>
+  | MouseButtonUp(_x, _y) => ()
+  | MouseButtonDown(x, y) =>
     switch (v.props.onClick) {
     | None => ()
     | Some(f) =>
-      let left = v.layout.left |> int_of_float;
-      let top = v.layout.top |> int_of_float;
-      let right = v.layout.right |> int_of_float;
-      let bottom = v.layout.bottom |> int_of_float;
       if (x > left && x < right) {
         if (y > top && y < bottom) {
           f();
         };
-      };
-      List.iter(
-        c =>
-          switch (c) {
-          | View(v) => triggerEvent(e, v)
-          | _ => ()
-          },
-        v.children,
-      );
+      }
     }
   | MouseMotion(_x, _y) => ()
   | MouseWheel => ()
+  | Quit => ()
+  | UnhandledEvent => ()
   };
+  List.iter(
+    c =>
+      switch (c) {
+      | View(cv) => triggerEvent(e, left, top, cv)
+      | _ => ()
+      },
+    v.children,
+  );
+};
 
 module Host: ReconcilerSpec.HostConfig = {
   type hostNode =
@@ -203,14 +206,23 @@ let render = (pureElement: Pure.pureElement, windowName) => {
         children: pureElement,
       }),
     ];
-  let i = ref(0);
-  while (i^ < 10) {
+  let break = ref(false);
+  while (! break^) {
     NanoVGReconciler.perfomWork();
     let draw = draw_of_view(0., 0., w^);
     Nanovg.render(draw);
     let event = Nanovg.runEventLoop();
-    triggerEvent(event, w^);
-    i := i^ + 1;
+    switch (event) {
+    | MouseMotion(_, _) => ()
+    | MouseButtonDown(x, y) => ()
+    | MouseButtonUp(_, _) => ()
+    | KeyUp => ()
+    | KeyDown => ()
+    | MouseWheel => ()
+    | Quit => break := true
+    | UnhandledEvent => ()
+    };
+    triggerEvent(event, 0, 0, w^);
     ();
   };
   Nanovg.cleanup();

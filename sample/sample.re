@@ -15,12 +15,12 @@ module ReducerComponent = {
   let createElement = (~children as _, _) =>
     Pure.element({
       ...Pure.reducerComponent("Reducer Component"),
-      initialState: () => 2,
+      initialState: () => 0,
       reducer: (action: action, state: state) =>
         switch (action) {
         | Add(value) => Pure.Update(value + state)
         },
-      render: _self =>
+      render: self =>
         <view
           layout={
             ...defaultLayout,
@@ -36,7 +36,7 @@ module ReducerComponent = {
             }>
             <text
               layout={...defaultLayout, flex: 1, marginTop: 100}
-              value="0"
+              value=(string_of_int(self.state))
             />
           </view>
           <view
@@ -47,6 +47,7 @@ module ReducerComponent = {
               justifyContent: JustifyCenter,
               alignItems: AlignCenter,
             }
+            onClick=(() => self.send(Add(1)))
             style={backgroundColor: Some(Color.rgba(150, 0, 0, 0.2))}>
             <text layout={...defaultLayout, flex: 1} value="add" />
           </view>
