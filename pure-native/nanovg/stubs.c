@@ -143,6 +143,7 @@ CAMLprim value ovg_draw(value draw) {
 };
 
 CAMLprim value ovg_run_event_loop() {
+  CAMLparam0();
   CAMLlocal1(event);
   SDL_Event e;
   SDL_MouseButtonEvent *mouse_event = &e;
@@ -151,9 +152,9 @@ CAMLprim value ovg_run_event_loop() {
   switch( e.type )
   {
   case SDL_KEYDOWN:
-    return Val_int(1);
+    CAMLreturn(Val_int(1));
   case SDL_KEYUP:
-    return Val_int(0);
+    CAMLreturn(Val_int(0));
   case SDL_MOUSEBUTTONDOWN:
     event = caml_alloc_shr(2, 0);
     Store_field(event, 0, Val_int(mouse_event->x));
@@ -170,15 +171,15 @@ CAMLprim value ovg_run_event_loop() {
     Store_field(event, 0, Val_int(mouse_event->y));
     break;
   case SDL_MOUSEWHEEL:
-    return Val_int(2);
+    CAMLreturn(Val_int(2));
   case SDL_QUIT:
     quit = 1;
-    return Val_int(3);
+    CAMLreturn(Val_int(3));
   default:
-    return Val_int(4);
+    CAMLreturn(Val_int(4));
   };
 
-  return event;
+  CAMLreturn(event);
 };
 
 CAMLprim value ovg_render(value draw) {

@@ -214,7 +214,7 @@ let render = (pureElement: Pure.pureElement, windowName) => {
     let event = Nanovg.runEventLoop();
     switch (event) {
     | MouseMotion(_, _) => ()
-    | MouseButtonDown(x, y) => ()
+    | MouseButtonDown(x, y) => triggerEvent(event, 0, 0, w^)
     | MouseButtonUp(_, _) => ()
     | KeyUp => ()
     | KeyDown => ()
@@ -222,7 +222,6 @@ let render = (pureElement: Pure.pureElement, windowName) => {
     | Quit => break := true
     | UnhandledEvent => ()
     };
-    triggerEvent(event, 0, 0, w^);
     ();
   };
   Nanovg.cleanup();
