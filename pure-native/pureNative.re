@@ -210,8 +210,7 @@ let render = (pureElement: Pure.pureElement, windowName) => {
   while (! break^) {
     NanoVGReconciler.perfomWork();
     let draw = draw_of_view(0., 0., w^);
-    Nanovg.render(draw);
-    let event = Nanovg.runEventLoop();
+    let event = Nanovg.render(draw);
     switch (event) {
     | MouseMotion(_, _) => ()
     | MouseButtonDown(x, y) => triggerEvent(event, 0, 0, w^)

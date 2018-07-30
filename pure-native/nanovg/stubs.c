@@ -25,6 +25,46 @@ CAMLprim value ovg_measureText(value text) {
   CAMLreturn(Val_int(w));
 };
 
+CAMLprim value ovg_run_event_loop() {
+  CAMLparam0();
+  CAMLlocal1(event);
+  SDL_Event e;
+  SDL_MouseButtonEvent *mouse_event = &e;
+
+  SDL_WaitEvent(&e);
+  switch( e.type )
+  {
+  case SDL_KEYDOWN:
+    CAMLreturn(Val_int(1));
+  case SDL_KEYUP:
+    CAMLreturn(Val_int(0));
+  case SDL_MOUSEBUTTONDOWN:
+    event = caml_alloc_shr(2, 0);
+    Store_field(event, 0, Val_int(mouse_event->x));
+    Store_field(event, 1, Val_int(mouse_event->y));
+    break;
+  case SDL_MOUSEBUTTONUP:
+    event = caml_alloc_shr(2, 1);
+    Store_field(event, 0, Val_int(mouse_event->x));
+    Store_field(event, 1, Val_int(mouse_event->y));
+    break;
+  case SDL_MOUSEMOTION:
+    event = caml_alloc_shr(2, 2);
+    Store_field(event, 0, Val_int(mouse_event->x));
+    Store_field(event, 0, Val_int(mouse_event->y));
+    break;
+  case SDL_MOUSEWHEEL:
+    CAMLreturn(Val_int(2));
+  case SDL_QUIT:
+    quit = 1;
+    CAMLreturn(Val_int(3));
+  default:
+    CAMLreturn(Val_int(4));
+  };
+
+  CAMLreturn(event);
+};
+
 CAMLprim value ovg_draw(value draw) {
   CAMLparam1(draw);
   CAMLlocal3(next, cmd, c);
@@ -142,48 +182,9 @@ CAMLprim value ovg_draw(value draw) {
   CAMLreturn(Val_unit);
 };
 
-CAMLprim value ovg_run_event_loop() {
-  CAMLparam0();
-  CAMLlocal1(event);
-  SDL_Event e;
-  SDL_MouseButtonEvent *mouse_event = &e;
-
-  SDL_WaitEvent(&e);
-  switch( e.type )
-  {
-  case SDL_KEYDOWN:
-    CAMLreturn(Val_int(1));
-  case SDL_KEYUP:
-    CAMLreturn(Val_int(0));
-  case SDL_MOUSEBUTTONDOWN:
-    event = caml_alloc_shr(2, 0);
-    Store_field(event, 0, Val_int(mouse_event->x));
-    Store_field(event, 1, Val_int(mouse_event->y));
-    break;
-  case SDL_MOUSEBUTTONUP:
-    event = caml_alloc_shr(2, 1);
-    Store_field(event, 0, Val_int(mouse_event->x));
-    Store_field(event, 1, Val_int(mouse_event->y));
-    break;
-  case SDL_MOUSEMOTION:
-    event = caml_alloc_shr(2, 2);
-    Store_field(event, 0, Val_int(mouse_event->x));
-    Store_field(event, 0, Val_int(mouse_event->y));
-    break;
-  case SDL_MOUSEWHEEL:
-    CAMLreturn(Val_int(2));
-  case SDL_QUIT:
-    quit = 1;
-    CAMLreturn(Val_int(3));
-  default:
-    CAMLreturn(Val_int(4));
-  };
-
-  CAMLreturn(event);
-};
-
 CAMLprim value ovg_render(value draw) {
   CAMLparam1(draw);
+  CAMLlocal1(event);
 
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
   nvgBeginFrame( vg, width, height, 1);
@@ -195,7 +196,8 @@ CAMLprim value ovg_render(value draw) {
   nvgluBindFramebuffer( NULL );
   SDL_GL_SwapWindow( window );
 
-  CAMLreturn(Val_unit);
+  event = ovg_run_event_loop();
+  CAMLreturn(event);
 }
 
 CAMLprim value ovg_create_window(value x, value y, value n) {

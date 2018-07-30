@@ -38,7 +38,7 @@ external draw : draw => unit = "ovg_draw";
 
 external runEventLoop : unit => event = "ovg_run_event_loop";
 
-external render : draw => unit = "ovg_render";
+external render : draw => event = "ovg_render";
 
 external cleanup : unit => unit = "ovg_cleanup";
 

@@ -38,7 +38,7 @@ let draw: draw => unit;
 
 let runEventLoop: unit => event;
 
-let render: draw => unit;
+let render: draw => event;
 
 let cleanup: unit => unit;
 
