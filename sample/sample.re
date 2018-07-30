@@ -11,7 +11,9 @@ module Test = {
 module ReducerComponent = {
   type state = int;
   type action =
-    | Add(int);
+    | Add(int)
+    | Reset
+    | Min;
   let createElement = (~children as _, _) =>
     Pure.element({
       ...Pure.reducerComponent("Reducer Component"),
@@ -19,6 +21,8 @@ module ReducerComponent = {
       reducer: (action: action, state: state) =>
         switch (action) {
         | Add(value) => Pure.Update(value + state)
+        | Reset => Pure.Update(0)
+        | Min => Pure.Update(state - 1)
         },
       render: self =>
         <view
@@ -59,6 +63,7 @@ module ReducerComponent = {
               justifyContent: JustifyCenter,
               alignItems: AlignCenter,
             }
+            onClick=(() => self.send(Reset))
             style={backgroundColor: Some(Color.rgba(0, 0, 0, 0.2))}>
             <text layout={...defaultLayout, flex: 1} value="reset" />
           </view>
@@ -70,6 +75,7 @@ module ReducerComponent = {
               justifyContent: JustifyCenter,
               alignItems: AlignCenter,
             }
+            onClick=(() => self.send(Min))
             style={backgroundColor: Some(Color.rgba(0, 0, 0, 0.2))}>
             <text layout={...defaultLayout, flex: 1} value="minus" />
           </view>

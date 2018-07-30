@@ -199,7 +199,7 @@ let render = (pureElement: Pure.pureElement, windowName) => {
     | Window(v) => v
     | _ => assert(false)
     };
-  Nanovg.createWindow(800, 600, windowName);
+  Nanovg.createWindow(400, 400, windowName);
   NanoVGReconciler.updateQueue :=
     NanoVGReconciler.updateQueue^
     @ [
