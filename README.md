@@ -1,5 +1,7 @@
 # Pure
 
+![ScreenShot](https://raw.githubusercontent.com/jmars/pure/master/screenshot.png)
+
 ### Pure stands for Pure Reason
 
 The idea of this project is to have cross-platform Reason code for web, desktop, mobile, that's why Pure was named as i wanted to write pure reason code (thanks to [cherta](https://twitter.com/iamcherta) for the name).
