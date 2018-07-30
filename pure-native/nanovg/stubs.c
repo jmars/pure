@@ -65,8 +65,8 @@ CAMLprim value ovg_run_event_loop() {
   CAMLreturn(event);
 };
 
-CAMLprim value ovg_draw(value draw) {
-  CAMLparam1(draw);
+CAMLprim value ovg_draw(value draw, value length) {
+  CAMLparam2(draw, length);
   CAMLlocal3(next, cmd, c);
   
   // Empty list
@@ -74,25 +74,26 @@ CAMLprim value ovg_draw(value draw) {
     CAMLreturn(Val_unit);
   }
 
-  cmd = Field(draw, 0);
-  next = Field(draw, 1);
   static double x, y, w, h;
   static char *s;
   static int r, g, b, a;
 
-  while (1) {
-    /*
-    type drawCmd =
-      | Rect(float, float, float, float)
-      | FillColor(Color.color)
-      | FontSize(float)
-      | FontFace(string)
-      | TextAlign(text_align)
-      | Text(float, float, string)
-      | StrokeColor(Color.color)
-      | StrokeWidth(float);
-    */
+  int l = Int_val(length); 
+  for(size_t i = 0; i < l; i++)
+  {
+    cmd = Field(draw, i);
     if (Is_block(cmd)) {
+      /*
+      type drawCmd =
+        | Rect(float, float, float, float)
+        | FillColor(Color.color)
+        | FontSize(float)
+        | FontFace(string)
+        | TextAlign(text_align)
+        | Text(float, float, string)
+        | StrokeColor(Color.color)
+        | StrokeWidth(float);
+      */
       switch (Tag_val(cmd)) {
         case 0:
           // Rect(float, float, float, float)
@@ -172,25 +173,20 @@ CAMLprim value ovg_draw(value draw) {
           break;
       }
     }
-    if (!Is_block(next)) {
-      CAMLreturn(Val_unit);
-    }
-    cmd = Field(next, 0);
-    next = Field(next, 1);
   }
 
   CAMLreturn(Val_unit);
 };
 
-CAMLprim value ovg_render(value draw) {
-  CAMLparam1(draw);
+CAMLprim value ovg_render(value draw, value length) {
+  CAMLparam2(draw, length);
   CAMLlocal1(event);
 
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
   nvgBeginFrame( vg, width, height, 1);
   nvgResetTransform( vg );
 
-  ovg_draw(draw);
+  ovg_draw(draw, length);
 
   nvgEndFrame( vg );
   nvgluBindFramebuffer( NULL );

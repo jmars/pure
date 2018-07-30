@@ -28,7 +28,7 @@ let defaultText = () => {
     width: 0.,
     height: 0.,
   },
-  draw: [],
+  draw: [||],
   props: PurePrimitives.defaultProps,
 };
 
@@ -41,7 +41,7 @@ let defaultView = () => {
     width: 0.,
     height: 0.,
   },
-  draw: [],
+  draw: [||],
   props: PurePrimitives.defaultProps,
   children: [],
 };
@@ -65,7 +65,7 @@ and draw_of_view = (x, y, v) => {
       v.props.style.backgroundColor,
     );
   let color = Color.toRgb(bg);
-  let self = [
+  let self = [|
     BeginPath,
     Rect(
       x +. v.layout.left,
@@ -80,18 +80,20 @@ and draw_of_view = (x, y, v) => {
       255.0 *. color.alpha |> int_of_float,
     ),
     Fill,
-  ];
-  self
-  @ List.concat(
+  |];
+  Array.append(
+    self,
+    Array.concat(
       List.map(
         draw_of_childNode(x +. v.layout.left, y +. v.layout.top),
         v.children,
       ),
-    );
+    ),
+  );
 }
 and draw_of_text = (x, y, s) => {
   let value = some_default("", s.props.value);
-  [Text(x +. s.layout.left, y +. s.layout.top, value)];
+  [|Text(x +. s.layout.left, y +. s.layout.top, value)|];
 };
 
 let window = Window(ref(defaultView()));
@@ -210,7 +212,7 @@ let render = (pureElement: Pure.pureElement, windowName) => {
   while (! break^) {
     NanoVGReconciler.perfomWork();
     let draw = draw_of_view(0., 0., w^);
-    let event = Nanovg.render(draw);
+    let event = Nanovg.render(draw, Array.length(draw));
     switch (event) {
     | MouseMotion(_, _) => ()
     | MouseButtonDown(x, y) => triggerEvent(event, 0, 0, w^)

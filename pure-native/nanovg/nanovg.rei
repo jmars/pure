@@ -30,7 +30,7 @@ type drawCmd =
   | StrokeColor(int, int, int, int)
   | StrokeWidth(float);
 
-type draw = list(drawCmd);
+type draw = array(drawCmd);
 
 let createWindow: (int, int, string) => unit;
 
@@ -38,7 +38,7 @@ let draw: draw => unit;
 
 let runEventLoop: unit => event;
 
-let render: draw => event;
+let render: (draw, int) => event;
 
 let cleanup: unit => unit;
 

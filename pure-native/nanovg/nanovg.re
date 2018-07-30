@@ -30,7 +30,7 @@ type drawCmd =
   | StrokeColor(int, int, int, int)
   | StrokeWidth(float);
 
-type draw = list(drawCmd);
+type draw = array(drawCmd);
 
 external createWindow : (int, int, string) => unit = "ovg_create_window";
 
@@ -38,7 +38,7 @@ external draw : draw => unit = "ovg_draw";
 
 external runEventLoop : unit => event = "ovg_run_event_loop";
 
-external render : draw => event = "ovg_render";
+external render : (draw, int) => event = "ovg_render";
 
 external cleanup : unit => unit = "ovg_cleanup";
 
