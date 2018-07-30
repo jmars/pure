@@ -4,6 +4,7 @@ type event =
   | MouseButtonDown(int, int)
   | MouseButtonUp(int, int)
   | MouseMotion(int, int)
+  | Resized(int, int)
   | MouseWheel
   | Quit
   | UnhandledEvent;

@@ -30,14 +30,11 @@ CAMLprim value ovg_run_event_loop() {
   CAMLlocal1(event);
   SDL_Event e;
   SDL_MouseButtonEvent *mouse_event = &e;
+  SDL_WindowEvent *window_event = &e;
 
   SDL_WaitEvent(&e);
   switch( e.type )
   {
-  case SDL_KEYDOWN:
-    CAMLreturn(Val_int(1));
-  case SDL_KEYUP:
-    CAMLreturn(Val_int(0));
   case SDL_MOUSEBUTTONDOWN:
     event = caml_alloc_shr(2, 0);
     Store_field(event, 0, Val_int(mouse_event->x));
@@ -51,8 +48,23 @@ CAMLprim value ovg_run_event_loop() {
   case SDL_MOUSEMOTION:
     event = caml_alloc_shr(2, 2);
     Store_field(event, 0, Val_int(mouse_event->x));
-    Store_field(event, 0, Val_int(mouse_event->y));
+    Store_field(event, 1, Val_int(mouse_event->y));
     break;
+  case SDL_WINDOWEVENT:
+    switch (window_event->event) {
+      case SDL_WINDOWEVENT_RESIZED:
+        event = caml_alloc_shr(2, 3);
+        Store_field(event, 0, Val_int(e.window.data1));
+        Store_field(event, 1, Val_int(e.window.data2));
+        break;
+      default:
+        CAMLreturn(Val_int(4));
+    }
+    break;
+  case SDL_KEYUP:
+    CAMLreturn(Val_int(0));
+  case SDL_KEYDOWN:
+    CAMLreturn(Val_int(1));
   case SDL_MOUSEWHEEL:
     CAMLreturn(Val_int(2));
   case SDL_QUIT:
@@ -226,14 +238,14 @@ CAMLprim value ovg_create_window(value x, value y, value n) {
 
 int sdl_init( SDL_Window **w, int width, int height, char* name)
 {
-  if ( SDL_Init( SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS ) == 0 )
+  if ( SDL_Init( SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_EVENTS ) == 0 )
   {
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 3 );
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
     SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
 
-    *w = SDL_CreateWindow(name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL );
+    *w = SDL_CreateWindow(name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE );
     if ( *w )
     {
       SDL_GL_CreateContext( *w );

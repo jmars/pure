@@ -119,6 +119,7 @@ let rec triggerEvent = (e: Nanovg.event, xv: int, yv: int, v: view) => {
     }
   | MouseMotion(_x, _y) => ()
   | MouseWheel => ()
+  | Resized(_, _) => ()
   | Quit => ()
   | UnhandledEvent => ()
   };
@@ -220,6 +221,7 @@ let render = (pureElement: Pure.pureElement, windowName) => {
     | KeyUp => ()
     | KeyDown => ()
     | MouseWheel => ()
+    | Resized(_, _) => ()
     | Quit => break := true
     | UnhandledEvent => ()
     };
