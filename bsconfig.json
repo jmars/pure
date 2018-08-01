@@ -6,11 +6,11 @@
   ],
   "static-libraries": [
     "lib/nanovg.o",
-    "lib/nanovg_stubs.o"
+    "lib/nanovg_stubs.o",
+    "lib/glew.o"
   ],
   "c-linker-flags": [
     "-lSDL2",
-    "-lGLEW",
     "-lGL",
     "-lm",
     "-lGLU"
